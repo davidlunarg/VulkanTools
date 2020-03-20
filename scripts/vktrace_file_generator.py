@@ -296,9 +296,15 @@ class VkTraceFileOutputGenerator(OutputGenerator):
     # Check if the parameter passed in is a pointer
     def paramIsPointer(self, param):
         ispointer = False
+        info = self.getTypeNameTuple(param)
+        type = info[0]
+        name = info[1]
+        print("@@@##@@@", name, " ", type)
         for elem in param:
+            print("   @", elem.tag, " ", elem.tail)
             if ((elem.tag != 'type') and (elem.tail is not None)) and '*' in elem.tail:
                 ispointer = True
+        print("   @rval ", str(ispointer))
         return ispointer
     #
     # Check if the parameter passed in is a static array
