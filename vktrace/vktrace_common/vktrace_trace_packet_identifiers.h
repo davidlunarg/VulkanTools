@@ -407,6 +407,10 @@ typedef enum _VKTRACE_TRACE_PACKET_ID_VK {
     VKTRACE_TPI_VK_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR = 329,
     VKTRACE_TPI_VK_vkCmdTraceRaysIndirectKHR = 330,
     VKTRACE_TPI_VK_vkGetDeviceAccelerationStructureCompatibilityKHR = 331,
+    VKTRACE_TPI_VK_vkGetGeneratedCommandsMemoryRequirementsNV = 332,
+    VKTRACE_TPI_VK_vkCmdPreprocessGeneratedCommandsNV = 333,
+    VKTRACE_TPI_VK_vkCmdExecuteGeneratedCommandsNV = 334,
+    VKTRACE_TPI_VK_vkCmdBindPipelineShaderGroupNV = 335,
 } VKTRACE_TRACE_PACKET_ID_VK;
 
 #define VKTRACE_BIG_ENDIAN 1

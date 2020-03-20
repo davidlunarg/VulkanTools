@@ -4983,7 +4983,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkWaitForFences(VkDevice
 
 VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateIndirectCommandsLayoutNV(
     VkDevice device, const VkIndirectCommandsLayoutCreateInfoNV* pCreateInfo, const VkAllocationCallbacks* pAllocator,
-    VkIndirectCommandsLayoutNVX* pIndirectCommandsLayout) {
+    VkIndirectCommandsLayoutNV* pIndirectCommandsLayout) {
     trim::TraceLock<std::mutex> lock(g_mutex_trace);
     VkResult result;
     vktrace_trace_packet_header* pHeader;
@@ -4991,10 +4991,10 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateIndirectCommands
     size_t datasize = 0;
 
     // Determine the size of the packet and create it
-    datasize = get_struct_chain_size((void*)pCreateInfo) + sizeof(VkAllocationCallbacks) + sizeof(VkIndirectCommandsLayoutNVX);
+    datasize = get_struct_chain_size((void*)pCreateInfo) + sizeof(VkAllocationCallbacks) + sizeof(VkIndirectCommandsLayoutNV);
     if (pCreateInfo)
     {
-        datasize += pCreateInfo->tokenCount * sizeof(VkIndirectCommandsLayoutTokenNVX);
+        datasize += pCreateInfo->tokenCount * sizeof(VkIndirectCommandsLayoutTokenNV);
     }
     CREATE_TRACE_PACKET(vkCreateIndirectCommandsLayoutNV, datasize);
 
@@ -5003,10 +5003,10 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateIndirectCommands
     pPacket = interpret_body_as_vkCreateIndirectCommandsLayoutNV(pHeader);
     pPacket->device = device;
 
-    vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pCreateInfo), sizeof(VkIndirectCommandsLayoutCreateInfoNVX), pCreateInfo);
+    vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pCreateInfo), sizeof(VkIndirectCommandsLayoutCreateInfoNV), pCreateInfo);
     if (pCreateInfo) vktrace_add_pnext_structs_to_trace_packet(pHeader, (void*)pPacket->pCreateInfo, pCreateInfo);
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pAllocator), sizeof(VkAllocationCallbacks), NULL);
-    vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pIndirectCommandsLayout), sizeof(VkIndirectCommandsLayoutNVX), pIndirectCommandsLayout);
+    vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pIndirectCommandsLayout), sizeof(VkIndirectCommandsLayoutNV), pIndirectCommandsLayout);
     if (pCreateInfo)
     {
         vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pCreateInfo->pTokens),

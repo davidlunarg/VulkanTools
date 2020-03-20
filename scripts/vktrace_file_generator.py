@@ -1215,7 +1215,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
         trace_pkt_id_hdr += '    switch(id) {\n'
         trace_pkt_id_hdr += '        case VKTRACE_TPI_VK_vkApiVersion: {\n'
         trace_pkt_id_hdr += '            packet_vkApiVersion* pPacket = (packet_vkApiVersion*)(pHeader->pBody);\n'
-        trace_pkt_id_hdr += '            snprintf(str, 1024, "vkApiVersion = 0x%x", pPacket->version);\n'
+        trace_pkt_id_hdr += ' /*BA*/     snprintf(str, 1024, "vkApiVersion = 0x%x", pPacket->version);\n'
         trace_pkt_id_hdr += '            return str;\n'
         trace_pkt_id_hdr += '        }\n'
         cmd_member_dict = dict(self.cmdMembers)
@@ -1247,7 +1247,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                     func_str += '%s%s = %s, ' % (ptr, p.name, pft)
                     print_vals += ', %s' % (pfi)
             trace_pkt_id_hdr += '            packet_%s* pPacket = (packet_%s*)(pHeader->pBody);\n' % (api.name, api.name)
-            trace_pkt_id_hdr += '            snprintf(str, 1024, "%s"%s);\n' % (func_str, print_vals)
+            trace_pkt_id_hdr += ' /*BC*/     snprintf(str, 1024, "%s"%s);\n' % (func_str, print_vals)
             trace_pkt_id_hdr += '            return str;\n'
             trace_pkt_id_hdr += '        }\n'
         trace_pkt_id_hdr += '        default:\n'
