@@ -1044,6 +1044,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                 elif 'srcObject' == param.name and 'Callback' in funcName:
                     objectTypeRemapParam = ', pPacket->objType'
                 pArray = ''
+                print("@@@", param.name, param.ispointer)
                 if param.ispointer:
                     if param.isconst == False:
                         result = '        %s remapped%s = m_objMapper.remap_%ss(*pPacket->%s%s);\n' % (cleanParamType, param.name, param.name.lower(), param.name, objectTypeRemapParam)
