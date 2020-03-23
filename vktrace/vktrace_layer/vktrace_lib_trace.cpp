@@ -5010,7 +5010,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateIndirectCommands
     if (pCreateInfo)
     {
         vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pCreateInfo->pTokens),
-                                          pCreateInfo->tokenCount  * sizeof(VkIndirectCommandsLayoutTokenNVX),
+                                          pCreateInfo->tokenCount  * sizeof(VkIndirectCommandsLayoutTokenNV),
                                           pCreateInfo->pTokens);
         vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo->pTokens));
     }

@@ -419,15 +419,15 @@ class ToolHelperFileOutputGenerator(OutputGenerator):
                 chain_size += '#ifdef %s\n' % item.ifdef_protect
             if item.name in self.structTypes:
                 chain_size += '            case %s: {\n' % self.structTypes[item.name].value
-                chain_size += '  /* AA */      struct_size += vk_size_%s((%s*)pNext);\n' % (item.name.lower(), item.name)
+                chain_size += '                struct_size += vk_size_%s((%s*)pNext);\n' % (item.name.lower(), item.name)
                 chain_size += '                break;\n'
                 chain_size += '            }\n'
                 struct_size += '    case %s: \n' % self.structTypes[item.name].value
-                struct_size += '/* AB */return vk_size_%s((%s*)struct_ptr);\n' % (item.name.lower(), item.name)
+                struct_size += '        return vk_size_%s((%s*)struct_ptr);\n' % (item.name.lower(), item.name)
             struct_size_funcs += 'size_t vk_size_%s(const %s* struct_ptr) { \n' % (item.name.lower(), item.name)
             struct_size_funcs += '    size_t struct_size = 0;\n'
             struct_size_funcs += '    if (struct_ptr) {\n'
-            struct_size_funcs += '/*AC*/  struct_size = sizeof(%s);\n' % item.name
+            struct_size_funcs += '        struct_size = sizeof(%s);\n' % item.name
             counter_declared = False
             for member in item.members:
                 vulkan_type = next((i for i, v in enumerate(self.structMembers) if v[0] == member.type), None)
@@ -437,17 +437,17 @@ class ToolHelperFileOutputGenerator(OutputGenerator):
                         if member.len is not None:
                             struct_size_funcs, counter_declared = self.DeclareCounter(struct_size_funcs, counter_declared)
                             struct_size_funcs += '        for (i = 0; i < struct_ptr->%s; i++) {\n' % member.len
-                            struct_size_funcs += '/*AD*/      struct_size += vk_size_%s(&struct_ptr->%s[i]);\n' % (member.type.lower(), member.name)
+                            struct_size_funcs += '            struct_size += vk_size_%s(&struct_ptr->%s[i]);\n' % (member.type.lower(), member.name)
                             struct_size_funcs += '        }\n'
                         else:
-                            struct_size_funcs += ' /*AE*/ struct_size += vk_size_%s(struct_ptr->%s);\n' % (member.type.lower(), member.name)
+                            struct_size_funcs += '        struct_size += vk_size_%s(struct_ptr->%s);\n' % (member.type.lower(), member.name)
                     else:
                         if member.type == 'char':
                             # Deal with sizes of character strings
                             if member.len is not None:
                                 struct_size_funcs, counter_declared = self.DeclareCounter(struct_size_funcs, counter_declared)
                                 struct_size_funcs += '        for (i = 0; i < struct_ptr->%s; i++) {\n' % member.len
-                                struct_size_funcs += '/*AF*/      struct_size += (sizeof(char*) + ROUNDUP_TO_4((sizeof(char) * (1 + strlen(struct_ptr->%s[i])))));\n' % (member.name)
+                                struct_size_funcs += '            struct_size += (sizeof(char*) + ROUNDUP_TO_4((sizeof(char) * (1 + strlen(struct_ptr->%s[i])))));\n' % (member.name)
                                 struct_size_funcs += '        }\n'
                             else:
                                 struct_size_funcs += '        struct_size += (struct_ptr->%s != NULL) ? ROUNDUP_TO_4(sizeof(char)*(1+strlen(struct_ptr->%s))) : 0;\n' % (member.name, member.name)
@@ -457,7 +457,7 @@ class ToolHelperFileOutputGenerator(OutputGenerator):
                                 checked_type = member.type
                                 if checked_type == 'void':
                                     checked_type = 'void*'
-                                struct_size_funcs += ' /*AG*/ struct_size += (struct_ptr->%s ) * sizeof(%s);\n' % (member.len, checked_type)
+                                struct_size_funcs += '        struct_size += (struct_ptr->%s ) * sizeof(%s);\n' % (member.len, checked_type)
             struct_size_funcs += '    }\n'
             struct_size_funcs += '    return struct_size;\n'
             struct_size_funcs += '}\n'

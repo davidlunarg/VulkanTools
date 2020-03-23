@@ -296,15 +296,9 @@ class VkTraceFileOutputGenerator(OutputGenerator):
     # Check if the parameter passed in is a pointer
     def paramIsPointer(self, param):
         ispointer = False
-        info = self.getTypeNameTuple(param)
-        type = info[0]
-        name = info[1]
-        #print("@@@##@@@", name, " ", type)
         for elem in param:
-            #print("   @", elem.tag, " ", elem.tail)
             if ((elem.tag is not 'type') and (elem.tail is not None)) and '*' in elem.tail:
                 ispointer = True
-        #print("   @rval ", str(ispointer))
         return ispointer
     #
     # Check if the parameter passed in is a static array
@@ -654,9 +648,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                                  # VK_EXT_display_control
                                  'RegisterDeviceEventEXT',
                                  'RegisterDisplayEventEXT',
-                                 # VK_NVX_device_generated_commands
-                                 #'CreateObjectTableNVX',
-                                 #'CmdProcessCommandsNVX',
+                                 # VK_NV_device_generated_commands
                                  'CreateIndirectCommandsLayoutNV',
                                  'BindBufferMemory2KHR',
                                  'BindImageMemory2KHR',
@@ -827,7 +819,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                     replay_gen_source += '            do {\n'
                 last_name = ''
                 for p in params:
-                    if p.name is not '':
+                    if p.name is not None and p.name != '':
                         if create_func or create_view:
                             if p.name != params[-1].name:
                                 replay_gen_source += self.RemapPacketParam(cmdname, p, last_name)
@@ -926,7 +918,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                 else:
                     rr_string += 'm_vkDeviceFuncs.%s(' % cmdname
                 for p in params:
-                    if p.name is not '':
+                    if p.name is not None and p.name != '':
                         # For last param of Create funcs, pass address of param
                         if create_func:
                             if cmdname == 'AllocateDescriptorSets' and ((p.name == params[-2].name) or (p.name == params[-1].name)):
@@ -1050,7 +1042,6 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                 elif 'srcObject' == param.name and 'Callback' in funcName:
                     objectTypeRemapParam = ', pPacket->objType'
                 pArray = ''
-                #print("@@@", param.name, param.ispointer)
                 if param.ispointer:
                     if param.isconst == False:
                         result = '        %s remapped%s = m_objMapper.remap_%ss(*pPacket->%s%s);\n' % (cleanParamType, param.name, param.name.lower(), param.name, objectTypeRemapParam)
@@ -1222,7 +1213,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
         trace_pkt_id_hdr += '    switch(id) {\n'
         trace_pkt_id_hdr += '        case VKTRACE_TPI_VK_vkApiVersion: {\n'
         trace_pkt_id_hdr += '            packet_vkApiVersion* pPacket = (packet_vkApiVersion*)(pHeader->pBody);\n'
-        trace_pkt_id_hdr += ' /*BA*/     snprintf(str, 1024, "vkApiVersion = 0x%x", pPacket->version);\n'
+        trace_pkt_id_hdr += '            snprintf(str, 1024, "vkApiVersion = 0x%x", pPacket->version);\n'
         trace_pkt_id_hdr += '            return str;\n'
         trace_pkt_id_hdr += '        }\n'
         cmd_member_dict = dict(self.cmdMembers)
@@ -1254,7 +1245,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                     func_str += '%s%s = %s, ' % (ptr, p.name, pft)
                     print_vals += ', %s' % (pfi)
             trace_pkt_id_hdr += '            packet_%s* pPacket = (packet_%s*)(pHeader->pBody);\n' % (api.name, api.name)
-            trace_pkt_id_hdr += ' /*BC*/     snprintf(str, 1024, "%s"%s);\n' % (func_str, print_vals)
+            trace_pkt_id_hdr += '            snprintf(str, 1024, "%s"%s);\n' % (func_str, print_vals)
             trace_pkt_id_hdr += '            return str;\n'
             trace_pkt_id_hdr += '        }\n'
         trace_pkt_id_hdr += '        default:\n'
@@ -2446,7 +2437,7 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                 if ret_value:
                     param_string += 'pPacket->result, '
                 for p in params:
-                    if p.name is not '':
+                    if p.name is not None and p.name != '':
                         param_string += 'pPacket->%s, ' % p.name
                         param_string_no_result += 'pPacket->%s, ' % p.name
                 param_string = '%s);' % param_string[:-2]
@@ -2783,8 +2774,6 @@ class VkTraceFileOutputGenerator(OutputGenerator):
                                          'vkCmdPushDescriptorSetWithTemplateKHR',
                                          'vkAcquireXlibDisplayEXT',
                                          'vkGetRandROutputDisplayEXT',
-                                         #'vkCreateObjectTableNVX',
-                                         #'vkCmdProcessCommandsNVX',
                                          'vkCreateIndirectCommandsLayoutNV',
                                          # TODO: VK_EXT_display_control
                                          ]
