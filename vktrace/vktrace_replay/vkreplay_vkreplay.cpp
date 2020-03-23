@@ -4603,14 +4603,14 @@ VkResult vkReplay::manually_replay_vkCreateIndirectCommandsLayoutNV(packet_vkCre
     // No need to remap pAllocator
 
     // Remap fields in pCreateInfo
-    *((VkIndirectCommandsLayoutTokenNVX **)&pPacket->pCreateInfo->pTokens) =
-        (VkIndirectCommandsLayoutTokenNVX *)vktrace_trace_packet_interpret_buffer_pointer(pPacket->header, (intptr_t)pPacket->pCreateInfo->pTokens);
+    *((VkIndirectCommandsLayoutTokenNV **)&pPacket->pCreateInfo->pTokens) =
+        (VkIndirectCommandsLayoutTokenNV *)vktrace_trace_packet_interpret_buffer_pointer(pPacket->header, (intptr_t)pPacket->pCreateInfo->pTokens);
 
     auto result = m_vkDeviceFuncs.CreateIndirectCommandsLayoutNV(remappeddevice, pPacket->pCreateInfo, pPacket->pAllocator,
                                                                   &local_pIndirectCommandsLayout);
 
     if (result == VK_SUCCESS) {
-        m_objMapper.add_to_indirectcommandslayoutnvxs_map(*(pPacket->pIndirectCommandsLayout), local_pIndirectCommandsLayout);
+        m_objMapper.add_to_indirectcommandslayoutnvs_map(*(pPacket->pIndirectCommandsLayout), local_pIndirectCommandsLayout);
     }
 
     return result;
