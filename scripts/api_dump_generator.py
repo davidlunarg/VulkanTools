@@ -537,6 +537,33 @@ std::ostream& dump_text_VkSurfaceFullScreenExclusiveWin32InfoEXT(const VkSurface
 std::ostream& dump_text_{unName}(const {unName}& object, const ApiDumpSettings& settings, int indents);
 @end union
 
+//============================= typedefs ==============================//
+
+// Functions for dumping typedef types that the codegen scripting can't handle
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+std::ostream& dump_text_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_text_VkAccelerationStructureTypeNV(VkAccelerationStructureTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_text_VkAccelerationStructureTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_text_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureFlagsKHR object, const ApiDumpSettings& settings, int indents);
+inline std::ostream& dump_text_VkBuildAccelerationStructureFlagsNV(VkBuildAccelerationStructureFlagsNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_text_VkBuildAccelerationStructureFlagsKHR(object, settings, indents);
+}}
+std::ostream& dump_text_VkAccelerationStructureMemoryRequirementsTypeKHR(VkAccelerationStructureMemoryRequirementsTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_text_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStructureMemoryRequirementsTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_text_VkAccelerationStructureMemoryRequirementsTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_text_VkAccelerationStructureKHR(const VkAccelerationStructureKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_text_VkAccelerationStructureNV(const VkAccelerationStructureNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_text_VkAccelerationStructureKHR(object, settings, indents);
+}}
+#endif // VK_ENABLE_BETA_EXTENSIONS
+
+
 //======================== pNext Chain Implementation =======================//
 
 std::ostream& dump_text_pNext_trampoline(const void* object, const ApiDumpSettings& settings, int indents)
@@ -883,9 +910,6 @@ std::ostream& dump_text_body_{funcName}(ApiDumpInstance& dump_inst, {funcTypedPa
 }}
 @end function
 
-//======================== pNext Chain Implementation =======================//
-
-
 """
 
 # This HTML Codegen is essentially copied from the format above.
@@ -934,6 +958,33 @@ std::ostream& dump_html_VkSurfaceFullScreenExclusiveWin32InfoEXT(const VkSurface
 @foreach union
 std::ostream& dump_html_{unName}(const {unName}& object, const ApiDumpSettings& settings, int indents);
 @end union
+
+//============================= typedefs ==============================//
+
+// Functions for dumping typedef types that the codegen scripting can't handle
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+std::ostream& dump_html_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_html_VkAccelerationStructureTypeNV(VkAccelerationStructureTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_html_VkAccelerationStructureTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_html_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureFlagsKHR object, const ApiDumpSettings& settings, int indents);
+inline std::ostream& dump_html_VkBuildAccelerationStructureFlagsNV(VkBuildAccelerationStructureFlagsNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_html_VkBuildAccelerationStructureFlagsKHR(object, settings, indents);
+}}
+std::ostream& dump_html_VkAccelerationStructureMemoryRequirementsTypeKHR(VkAccelerationStructureMemoryRequirementsTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_html_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStructureMemoryRequirementsTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_html_VkAccelerationStructureMemoryRequirementsTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_html_VkAccelerationStructureKHR(const VkAccelerationStructureKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_html_VkAccelerationStructureNV(const VkAccelerationStructureNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_html_VkAccelerationStructureKHR(object, settings, indents);
+}}
+#endif // VK_ENABLE_BETA_EXTENSIONS
+
 
 //======================== pNext Chain Implementation =======================//
 
@@ -1340,6 +1391,33 @@ std::ostream& dump_json_{sctName}(const {sctName}& object, const ApiDumpSettings
 @foreach union
 std::ostream& dump_json_{unName}(const {unName}& object, const ApiDumpSettings& settings, int indents);
 @end union
+
+//============================= typedefs ==============================//
+
+// Functions for dumping typedef types that the codegen scripting can't handle
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+std::ostream& dump_json_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_json_VkAccelerationStructureTypeNV(VkAccelerationStructureTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_json_VkAccelerationStructureTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_json_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureFlagsKHR object, const ApiDumpSettings& settings, int indents);
+inline std::ostream& dump_json_VkBuildAccelerationStructureFlagsNV(VkBuildAccelerationStructureFlagsNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_json_VkBuildAccelerationStructureFlagsKHR(object, settings, indents);
+}}
+std::ostream& dump_json_VkAccelerationStructureMemoryRequirementsTypeKHR(VkAccelerationStructureMemoryRequirementsTypeKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_json_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStructureMemoryRequirementsTypeNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_json_VkAccelerationStructureMemoryRequirementsTypeKHR(object, settings, indents);
+}}
+std::ostream& dump_json_VkAccelerationStructureKHR(const VkAccelerationStructureKHR object, const ApiDumpSettings& settings, int indents);
+std::ostream& dump_json_VkAccelerationStructureNV(const VkAccelerationStructureNV object, const ApiDumpSettings& settings, int indents)
+{{
+    return dump_json_VkAccelerationStructureKHR(object, settings, indents);
+}}
+#endif // VK_ENABLE_BETA_EXTENSIONS
+
 
 //======================== pNext Chain Implementation =======================//
 
