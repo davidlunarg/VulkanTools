@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cstring>
 #include <assert.h>
 #include <unordered_map>
 #include <iostream>
@@ -244,6 +245,7 @@ void readScreenShotFormatENV(void) {
     }
 
     if (vk_screenshot_format && *vk_screenshot_format) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@1 vk_screenshot_format is %s\n", vk_screenshot_format);
         if (strcmp(vk_screenshot_format, "UNORM") == 0) {
             userColorSpaceFormat = UNORM;
         } else if (strcmp(vk_screenshot_format, "SRGB") == 0) {
@@ -522,7 +524,7 @@ WritePPMCleanupData::~WritePPMCleanupData() {
 static void writePPM(const char *filename, VkImage image1) {
     VkResult err;
     bool pass;
-
+    
     // Bail immediately if we can't find the image.
     if (imageMap.empty() || imageMap.find(image1) == imageMap.end()) return;
 
@@ -617,6 +619,8 @@ static void writePPM(const char *filename, VkImage image1) {
         }
     }
 
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@2 destformat set to %d\n", destformat);
+
     // User did not require sepecific format so we use same colorspace with
     // swapchain format
     if (destformat == VK_FORMAT_UNDEFINED) {
@@ -660,6 +664,7 @@ static void writePPM(const char *filename, VkImage image1) {
                 destformat = VK_FORMAT_R8G8B8_SINT;
         }
     }
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@3 destformat set to %d\n", destformat);
 
     // Still could not find the right format then we use UNORM
     if (destformat == VK_FORMAT_UNDEFINED) {
@@ -679,6 +684,7 @@ static void writePPM(const char *filename, VkImage image1) {
         else
             destformat = VK_FORMAT_R8G8B8_UNORM;
     }
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@4 destformat set to %d\n", destformat);
 
     if ((FormatCompatibilityClass(destformat) != FormatCompatibilityClass(format))) {
         assert(0);
@@ -722,9 +728,13 @@ static void writePPM(const char *filename, VkImage image1) {
     pInstanceTable->GetPhysicalDeviceFormatProperties(physicalDevice, destformat, &targetFormatProps);
     bool need2steps = false;
     bool copyOnly = false;
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@5 destformat set to %d\n", format);
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@6 format set to %d\n", format);
     if (destformat == format) {
         copyOnly = true;
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@7\n");
     } else {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@8\n");
         bool const bltLinear = targetFormatProps.linearTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT ? true : false;
         bool const bltOptimal = targetFormatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_BLIT_DST_BIT ? true : false;
         if (!bltLinear && !bltOptimal) {
@@ -732,10 +742,12 @@ static void writePPM(const char *filename, VkImage image1) {
             // unlikely to have a device that cannot blit to either type.
             // But punt by just doing a copy and possibly have the wrong
             // colors.  This should be quite rare.
+            __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@9\n");
             copyOnly = true;
         } else if (!bltLinear && bltOptimal) {
             // Cannot blit to a linear target but can blt to optimal, so copy
             // after blit is needed.
+            __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@a\n");
             need2steps = true;
         }
         // Else bltLinear is available and only 1 step is needed.
@@ -770,6 +782,7 @@ static void writePPM(const char *filename, VkImage image1) {
 
     // If we need both images, set up image2 to be read/write and tiled.
     if (need2steps) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@b\n");
         imgCreateInfo2.tiling = VK_IMAGE_TILING_OPTIMAL;
         imgCreateInfo2.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
     }
@@ -803,6 +816,7 @@ static void writePPM(const char *filename, VkImage image1) {
 
     // Create image3 and allocate its memory, if needed.
     if (need2steps) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@c\n");
         err = pTableDevice->CreateImage(device, &imgCreateInfo3, NULL, &data.image3);
         assert(!err);
         if (VK_SUCCESS != err) return;
@@ -821,6 +835,7 @@ static void writePPM(const char *filename, VkImage image1) {
     }
 
     // We want to create our own command pool to be sure we can use it from this thread
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@d\n");
     VkCommandPoolCreateInfo cmd_pool_info = {};
     cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     cmd_pool_info.pNext = NULL;
@@ -842,6 +857,7 @@ static void writePPM(const char *filename, VkImage image1) {
     VkDevice cmdBuf = static_cast<VkDevice>(static_cast<void *>(data.commandBuffer));
     if (deviceMap.find(cmdBuf) != deviceMap.end()) {
         // Remove element with key cmdBuf from deviceMap so we can replace it
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@e\n");
         deviceMap.erase(cmdBuf);
     }
     dispatchMap.emplace(cmdBuf, dispMap);
@@ -854,8 +870,10 @@ static void writePPM(const char *filename, VkImage image1) {
     // binding (trampoline.c). But here, we have to do it ourselves.
     if (!dispMap->pfn_dev_init) {
         *((const void **)data.commandBuffer) = *(void **)device;
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@f\n");
     } else {
         err = dispMap->pfn_dev_init(device, (void *)data.commandBuffer);
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@g--\n");
         assert(!err);
     }
 
@@ -920,9 +938,18 @@ static void writePPM(const char *filename, VkImage image1) {
         {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}, {0, 0, 0}, {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}, {0, 0, 0}, {width, height, 1}};
 
     if (copyOnly) {
-        pTableCommandBuffer->CmdCopyImage(data.commandBuffer, image1, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, data.image2,
-                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
+        static int cnt=1;
+        //if (cnt++ == 3)
+        if (cnt)
+        {
+            __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@h--\n");
+            pTableCommandBuffer->CmdCopyImage(data.commandBuffer, image1, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, data.image2,
+                                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
+         } else {
+            __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@h-- copy skipped\n");
+         }
     } else {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@i\n");
         VkImageBlit imageBlitRegion = {};
         imageBlitRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         imageBlitRegion.srcSubresource.baseArrayLayer = 0;
@@ -942,6 +969,7 @@ static void writePPM(const char *filename, VkImage image1) {
         pTableCommandBuffer->CmdBlitImage(data.commandBuffer, image1, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, data.image2,
                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageBlitRegion, VK_FILTER_NEAREST);
         if (need2steps) {
+            __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@j\n");
             // image 3 needs to be transitioned from its undefined state to a
             // transfer destination.
             destMemoryBarrier.image = data.image3;
@@ -964,6 +992,7 @@ static void writePPM(const char *filename, VkImage image1) {
             generalMemoryBarrier.image = data.image3;
         }
     }
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@k--\n");
 
     // The destination needs to be transitioned from the optimal copy format to
     // the format we can read with the CPU.
@@ -1009,12 +1038,14 @@ static void writePPM(const char *filename, VkImage image1) {
     VkSubresourceLayout srLayout;
     const char *ptr;
     if (!need2steps) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@l--\n");
         pTableDevice->GetImageSubresourceLayout(device, data.image2, &sr, &srLayout);
         err = pTableDevice->MapMemory(device, data.mem2, 0, VK_WHOLE_SIZE, 0, (void **)&ptr);
         assert(!err);
         if (VK_SUCCESS != err) return;
         data.mem2mapped = true;
     } else {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@m\n");
         pTableDevice->GetImageSubresourceLayout(device, data.image3, &sr, &srLayout);
         err = pTableDevice->MapMemory(device, data.mem3, 0, VK_WHOLE_SIZE, 0, (void **)&ptr);
         assert(!err);
@@ -1023,6 +1054,7 @@ static void writePPM(const char *filename, VkImage image1) {
     }
 
     // Write the data to a PPM file.
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@n--\n");
     ofstream file(filename, ios::binary);
     assert(file.is_open());
 
@@ -1043,23 +1075,32 @@ static void writePPM(const char *filename, VkImage image1) {
 
     ptr += srLayout.offset;
     if (3 == numChannels) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@o\n");
         for (uint32_t y = 0; y < height; y++) {
             file.write(ptr, 3 * width);
+            memset ((void*)ptr, 0, srLayout.rowPitch);
             ptr += srLayout.rowPitch;
         }
     } else if (4 == numChannels) {
+        __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@p--\n");
         for (uint32_t y = 0; y < height; y++) {
             const unsigned int *row = (const unsigned int *)ptr;
             for (uint32_t x = 0; x < width; x++) {
+                if (x == 0 && y < 5) {
+                   unsigned char *cp = (unsigned char*)row;
+                   __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@q-- Row: %d, 1st word: %02x %02x %02x %02x\n", (int)y, cp[0], cp[1], cp[2], cp[3]);
+                   }
                 file.write((char *)row, 3);
                 row++;
             }
+            memset ((void*)ptr, 0, srLayout.rowPitch);
             ptr += srLayout.rowPitch;
         }
     }
     file.close();
 
     // Clean up handled by ~WritePPMCleanupData()
+    __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@r--\n");
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL CreateInstance(const VkInstanceCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator,
@@ -1350,6 +1391,8 @@ VKAPI_ATTR VkResult VKAPI_CALL QueuePresentKHR(VkQueue queue, const VkPresentInf
             if (pPresentInfo && pPresentInfo->swapchainCount > 0) {
                 swapchain = pPresentInfo->pSwapchains[0];
                 image = swapchainMap[swapchain]->imageList[pPresentInfo->pImageIndices[0]];
+                __android_log_print(ANDROID_LOG_INFO, "screenshot", "@@@@@@@@@ calling writePPM, swapchainCount = %d\n", pPresentInfo->swapchainCount);
+                sleep(5);
                 writePPM(fileName.c_str(), image);
             } else {
 #ifdef ANDROID
